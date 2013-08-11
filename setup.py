@@ -19,7 +19,7 @@ VERSION = '1.5'
 setup(
     name=NAME,
     version=VERSION,
-    url='https://bitbucket.org/birkenfeld/sphinx-contrib/overview',
+    url='https://bitbucket.org/dhellmann/sphinxcontrib-paverutils/',
     license='BSD',
     author='Doug Hellmann',
     author_email='doug.hellmann@gmail.com',
