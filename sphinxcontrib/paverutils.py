@@ -162,10 +162,10 @@ def run_sphinx(options, *option_sets):
         '-c', paths.confdir,
     ]
 
-    if options.get('force_all',False):
-      sphinxopts.append('-a')
-    if options.get('freshenv',False):
-      sphinxopts.append('-E')
+    if options.get('force_all', False):
+        sphinxopts.append('-a')
+    if options.get('freshenv', False):
+        sphinxopts.append('-E')
 
     sphinxopts.extend(template_args)
     sphinxopts.extend([paths.srcdir, paths.outdir])
