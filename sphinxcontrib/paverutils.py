@@ -46,6 +46,10 @@ def html(options):
     builder
       the name of the sphinx builder to use
       default: html
+    force_all
+      write all files, not just new and changed
+    freshenv
+      don't use the saved environment, always read all files
     template_args
       dictionary of values to be passed as name-value pairs to the HTML builder
       default: {}
@@ -82,6 +86,10 @@ def pdf(options):
     outdir
       the location of the generated output files
       default: $builddir/$builder
+    force_all
+      write all files, not just new and changed
+    freshenv
+      don't use the saved environment, always read all files
     builder
       the name of the sphinx builder to use
       default: pdf
@@ -127,6 +135,10 @@ def run_sphinx(options, *option_sets):
     builder
       the name of the sphinx builder to use
       default: html
+    force_all
+      write all files, not just new and changed
+    freshenv
+      don't use the saved environment, always read all files
     template_args
       dictionary of values to be passed as name-value pairs to the HTML builder
       default: {}
@@ -149,6 +161,12 @@ def run_sphinx(options, *option_sets):
         '-d', paths.doctrees,
         '-c', paths.confdir,
     ]
+
+    if options.get('force_all',False):
+      sphinxopts.append('-a')
+    if options.get('freshenv',False):
+      sphinxopts.append('-E')
+
     sphinxopts.extend(template_args)
     sphinxopts.extend([paths.srcdir, paths.outdir])
     dry("sphinx-build %s" % (" ".join(sphinxopts),), sphinx.main, sphinxopts)
@@ -163,9 +181,9 @@ def _get_and_create_paths(options):
     Returns a Bundle with the required values filled in.
     """
     paths = _get_paths(options)
-    paths.builddir.mkdir()
-    paths.outdir.mkdir()
-    paths.doctrees.mkdir()
+    paths.builddir.mkdir_p()
+    paths.outdir.mkdir_p()
+    paths.doctrees.mkdir_p()
     return paths
 
 
