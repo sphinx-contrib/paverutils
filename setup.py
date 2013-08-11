@@ -11,10 +11,10 @@ Paver allowing for both HTML and PDF generation from the same
 pavement.py file.
 '''
 
-requires = ['Sphinx>=0.6', 'Paver>=1.0.1']
+requires = ['Sphinx>=0.6', 'Paver>=1.02.0']
 
 NAME = 'sphinxcontrib-paverutils'
-VERSION = '1.4'
+VERSION = '1.5'
 
 setup(
     name=NAME,
