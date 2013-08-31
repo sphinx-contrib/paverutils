@@ -280,6 +280,7 @@ def run_script(input_file, script_name,
                trailing_newlines=True,
                break_lines_at=0,
                line_break_mode='break',
+               adjust_python_for_version=True,
                ):
     """Run a script in the context of the input_file's directory,
     return the text output formatted to be included as an rst
@@ -327,8 +328,18 @@ def run_script(input_file, script_name,
          wrap
            Use textwrap.fill() to wrap
 
+    adjust_python_for_version=True
+      Boolean controlling whether the default `python`
+      interpreter setting is changed to `python3` when
+      running under python 3.
     """
     rundir = path(input_file).dirname()
+    if (adjust_python_for_version
+            and interpreter == 'python'
+            and sys.version_info[0] == 3):
+        # Automatically switch to python3 if we're running under
+        # python3 ourselves.
+        interpreter = 'python3'
     if interpreter:
         cmd = '%(interpreter)s %(script_name)s' % {
             'interpreter': interpreter,
