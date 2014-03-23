@@ -22,7 +22,7 @@ setup(
     url='https://bitbucket.org/dhellmann/sphinxcontrib-paverutils/',
     license='BSD',
     author='Doug Hellmann',
-    author_email='doug.hellmann@gmail.com',
+    author_email='doug@doughellmann.com',
     description='Sphinx/Paver integration',
     long_description=long_desc,
     zip_safe=False,
