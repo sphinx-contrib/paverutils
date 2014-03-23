@@ -261,6 +261,19 @@ virtualenvwrapper_
 History
 =======
 
+1.6
+---
+
+* include tox.ini in source dist
+* adjust interpreter for python3
+* redefine cog to allow it to run on specific input file(s)
+* compatibility with paver 1.2, and add support force a full build
+
+1.5
+---
+
+Misc.
+
 1.4
 ---
 
