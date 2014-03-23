@@ -18,3 +18,7 @@ syntax: glob
 .tox/
 .coverage/
 .*.swp
+
+# Created by pbr
+ChangeLog
+AUTHORS
