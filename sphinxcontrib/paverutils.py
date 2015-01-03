@@ -108,6 +108,13 @@ def pdf(options):
     return
 
 
+def _wrap_sphinx(sphinxopts):
+    try:
+        return sphinx.main(sphinxopts)
+    except SystemExit as e:
+        return e.code
+
+
 def run_sphinx(options, *option_sets):
     """Helper function to run sphinx with common options.
 
@@ -175,10 +182,11 @@ def run_sphinx(options, *option_sets):
 
     sphinxopts.extend(template_args)
     sphinxopts.extend([paths.srcdir, paths.outdir])
-    dry("sphinx-build %s" % (" ".join(sphinxopts),), sphinx.main, sphinxopts)
+    rc = dry("sphinx-build %s" % (" ".join(sphinxopts),),
+             _wrap_sphinx, sphinxopts)
 
     options.order()
-    return
+    return rc
 
 
 def _get_and_create_paths(options):
