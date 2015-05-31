@@ -259,7 +259,7 @@ def adjust_line_widths(lines, break_lines_at, line_break_mode):
             )
 
         elif line_break_mode == 'fill':
-            prefix = l[:len(l)-len(l.lstrip())]
+            prefix = l[:len(l) - len(l.lstrip())]
             broken_lines.extend(
                 textwrap.fill(l, width=break_lines_at,
                               subsequent_indent=prefix).splitlines()
