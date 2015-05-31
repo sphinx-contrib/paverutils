@@ -361,6 +361,7 @@ def run_script(input_file, script_name,
         'cmd': cmd,
     }
     try:
+        print()
         output_text = sh(real_cmd, capture=True, ignore_error=ignore_error)
     except Exception as err:
         print('*' * 50)
@@ -424,9 +425,9 @@ def _runcog(options, files, uncog=False):
         c.options.defines['include'] = include
         c.options.defines['sh'] = _cogsh(c)
 
-    c.sBeginSpec = options.get('beginspec', '[[[cog')
-    c.sEndSpec = options.get('endspec', ']]]')
-    c.sEndOutput = options.get('endoutput', '[[[end]]]')
+    c.options.sBeginSpec = options.get('beginspec', '[[[cog')
+    c.options.sEndSpec = options.get('endspec', ']]]')
+    c.options.sEndOutput = options.get('endoutput', '[[[end]]]')
 
     basedir = options.get('basedir', None)
     if basedir is None:
@@ -465,8 +466,12 @@ def cog(options):
     files_to_cog = getattr(options, 'args', [])
     if files_to_cog and os.path.isdir(files_to_cog[0]):
         dir_to_scan = path(files_to_cog[0])
-        files_to_cog = dir_to_scan.walkfiles(
+        files_to_cog = list(dir_to_scan.walkfiles(
             options.get("pattern", "*.rst")
-        )
-    _runcog(options, files_to_cog)
+        ))
+    try:
+        _runcog(options, files_to_cog)
+    except Exception as err:
+        print('ERROR: %s' % err)
+        raise
     return
