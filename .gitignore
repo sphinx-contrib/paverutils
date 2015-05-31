@@ -22,3 +22,5 @@ syntax: glob
 # Created by pbr
 ChangeLog
 AUTHORS
+
+*.egg
