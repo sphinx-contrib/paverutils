@@ -380,7 +380,7 @@ def run_script(input_file, script_name,
 
     command_line = adjust_line_widths(
         ['\t$ %s' % cmd],
-        break_lines_at - 1 if break_lines_at else 73,
+        break_lines_at - 1 if break_lines_at else 64,
         'continue',
     )
 
