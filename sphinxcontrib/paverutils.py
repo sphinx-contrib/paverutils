@@ -59,6 +59,9 @@ def html(options):
     template_args
       dictionary of values to be passed as name-value pairs to the HTML builder
       default: {}
+    config_args
+      dictionary of values to be passed as name-value pairs to configuration
+      default: {}
     """
     run_sphinx(options, 'html')
     return
@@ -155,6 +158,9 @@ def run_sphinx(options, *option_sets):
     template_args
       dictionary of values to be passed as name-value pairs to the HTML builder
       default: {}
+    config_args
+      dictionary of values to be passed as name-value pairs to configuration
+      default: {}
     """
     if 'sphinx' not in option_sets:
         option_sets += ('sphinx',)
@@ -167,6 +173,10 @@ def run_sphinx(options, *option_sets):
     template_args = [
         '-A%s=%s' % (name, value)
         for (name, value) in getattr(options, 'template_args', {}).items()
+    ]
+    config_args = [
+        '-D%s=%s' % (name, value)
+        for (name, value) in getattr(options, 'config_args', {}).items()
     ]
     sphinxopts = [
         '',
@@ -181,6 +191,7 @@ def run_sphinx(options, *option_sets):
         sphinxopts.append('-E')
 
     sphinxopts.extend(template_args)
+    sphinxopts.extend(config_args)
     sphinxopts.extend([paths.srcdir, paths.outdir])
     rc = dry("sphinx-build %s" % (" ".join(sphinxopts),),
              _wrap_sphinx, sphinxopts)
