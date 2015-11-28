@@ -161,6 +161,9 @@ def run_sphinx(options, *option_sets):
     config_args
       dictionary of values to be passed as name-value pairs to configuration
       default: {}
+    warnerror
+      Flag indicating that Sphinx warnings should be treated as errors.
+      Defaults to False.
     """
     if 'sphinx' not in option_sets:
         option_sets += ('sphinx',)
@@ -189,6 +192,8 @@ def run_sphinx(options, *option_sets):
         sphinxopts.append('-a')
     if options.get('freshenv', False):
         sphinxopts.append('-E')
+    if options.get('warnerror', False):
+        sphinxopts.append('-W')
 
     sphinxopts.extend(template_args)
     sphinxopts.extend(config_args)
