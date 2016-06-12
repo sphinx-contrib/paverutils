@@ -306,6 +306,7 @@ def run_script(input_file, script_name,
                break_lines_at=0,
                line_break_mode='break',
                adjust_python_for_version=True,
+               line_cleanups=[],
                ):
     """Run a script in the context of the input_file's directory,
     return the text output formatted to be included as an rst
@@ -357,6 +358,14 @@ def run_script(input_file, script_name,
       Boolean controlling whether the default `python`
       interpreter setting is changed to `python3` when
       running under python 3.
+
+    line_cleanups=[]
+      Process each output line through the cleanups and replace the
+      input line with the output values. Each cleanup should be a
+      callable that accepts the name of the original input file and
+      the line of output produced and returns a replacement string, or
+      the original input string if no changes are to be made.
+
     """
     rundir = path(input_file).dirname()
     if (adjust_python_for_version
@@ -404,6 +413,14 @@ def run_script(input_file, script_name,
     lines.extend(command_line)
     lines.append('')  # a blank line
     lines.extend(output_text.splitlines())  # the output
+
+    # Clean up the raw output lines.
+    clean_lines = []
+    for line in lines:
+        for cleanup in line_cleanups:
+            line = cleanup(input_file, line)
+        clean_lines.append(line)
+    lines = clean_lines
 
     # Deal with lines that might be too long
     if break_lines_at:
