@@ -102,12 +102,16 @@ def pdf(options):
     builder
       the name of the sphinx builder to use
       default: pdf
+    pdflatex
+      the name of the command to use to make a PDF
+      default: pdflatex
     """
     run_sphinx(options, 'pdf')
     options.order('pdf')
+    pdflatex = options.get('pdflatex', 'pdflatex')
     paths = _get_paths(options)
     latex_dir = paths.builddir / options.builder
-    sh('cd %s; make' % latex_dir)
+    sh('cd %s; PDFLATEX="%s" make -e' % (latex_dir, pdflatex))
     return
 
 
