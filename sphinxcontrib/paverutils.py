@@ -398,7 +398,7 @@ def run_script(input_file, script_name,
         if not ignore_error:
             raise
     if include_prefix:
-        response = '\n::\n\n'
+        response = '\n.. code-block:: none\n\n'
     else:
         response = ''
 #     response += '\t$ %(cmd)s\n\n\t' % vars()
