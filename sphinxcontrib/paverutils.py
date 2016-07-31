@@ -159,6 +159,8 @@ def run_sphinx(options, *option_sets):
       write all files, not just new and changed
     freshenv
       don't use the saved environment, always read all files
+    quiet
+      Suppress all output
     template_args
       dictionary of values to be passed as name-value pairs to the HTML builder
       default: {}
@@ -198,6 +200,8 @@ def run_sphinx(options, *option_sets):
         sphinxopts.append('-E')
     if options.get('warnerror', False):
         sphinxopts.append('-W')
+    if options.get('quiet', False):
+        sphinxopts.append('-Q')
 
     sphinxopts.extend(template_args)
     sphinxopts.extend(config_args)
