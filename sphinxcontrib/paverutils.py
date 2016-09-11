@@ -326,7 +326,11 @@ def run_script(input_file, script_name,
        The name of the Python script living in the same directory as
        input_file to be run.  If not using an interpreter, this can be
        a complete command line.  If using an alternate interpreter, it
-       can be some other type of file.
+       can be some other type of file. If the command line is very
+       long, this can be a list of parts. They will be displayed
+       with backslashes indicating the continuation from line to line,
+       but will be joined with a space character into a single string
+       to be executed.
 
      include_prefix=True
        Boolean controlling whether the :: prefix is included.
@@ -378,6 +382,10 @@ def run_script(input_file, script_name,
         # Automatically switch to python3 if we're running under
         # python3 ourselves.
         interpreter = 'python3'
+    cmd_list = script_name
+    if isinstance(script_name, list):
+        # We've been given a list, convert it to a string.
+        script_name = ' '.join(cmd_list)
     if interpreter:
         cmd = '%(interpreter)s %(script_name)s' % {
             'interpreter': interpreter,
@@ -405,16 +413,35 @@ def run_script(input_file, script_name,
         response = '\n.. code-block:: none\n\n'
     else:
         response = ''
-#     response += '\t$ %(cmd)s\n\n\t' % vars()
 
-    command_line = adjust_line_widths(
-        ['\t$ %s' % cmd],
-        break_lines_at - 1 if break_lines_at else 64,
-        'continue',
-    )
-
+    # Start building our result list.
     lines = []
-    lines.extend(command_line)
+
+    # Add the command we ran to the result.
+    if isinstance(cmd_list, list):
+        # We were originally given a list, so interpret the
+        # parts as already split up. Add the continuation
+        # markers to the end.
+        if interpreter:
+            lines.append('\t$ {} {}'.format(interpreter, cmd_list[0] + ' \\'))
+        else:
+            lines.append('\t$ {}'.format(cmd_list[0] + ' \\'))
+        lines.extend(
+            l + ' \\'
+            for l in cmd_list[1:-1]
+        )
+        lines.append(cmd_list[-1])
+    else:
+        raw_command_line = '\t$ %s' % cmd
+        for cleanup in line_cleanups:
+            raw_command_line = cleanup(input_file, raw_command_line)
+        command_line = adjust_line_widths(
+            [raw_command_line],
+            break_lines_at - 1 if break_lines_at else 64,
+            'continue',
+        )
+        lines.extend(command_line)
+
     lines.append('')  # a blank line
     lines.extend(output_text.splitlines())  # the output
 
