@@ -110,8 +110,8 @@ def pdf(options):
     options.order('pdf')
     pdflatex = options.get('pdflatex', 'pdflatex')
     paths = _get_paths(options)
-    latex_dir = paths.builddir / options.builder
-    sh('cd %s; PDFLATEX="%s" make -e' % (latex_dir, pdflatex))
+    outdir = options.get('outdir', paths.builddir / options.builder)
+    sh('cd %s; PDFLATEX="%s" make -e' % (outdir, pdflatex))
     return
 
 
