@@ -106,7 +106,9 @@ def pdf(options):
       the name of the command to use to make a PDF
       default: pdflatex
     """
-    run_sphinx(options, 'pdf')
+    rc = run_sphinx(options, 'pdf')
+    if not rc:
+        return rc
     options.order('pdf')
     pdflatex = options.get('pdflatex', 'pdflatex')
     paths = _get_paths(options)
