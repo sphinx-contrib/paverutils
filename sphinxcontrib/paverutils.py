@@ -107,7 +107,8 @@ def pdf(options):
       default: pdflatex
     """
     rc = run_sphinx(options, 'pdf')
-    if not rc:
+    if rc:
+        print('skipping the rest of the build, sphinx returned', rc)
         return rc
     options.order('pdf')
     pdflatex = options.get('pdflatex', 'pdflatex')
