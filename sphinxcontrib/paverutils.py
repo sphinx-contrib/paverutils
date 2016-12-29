@@ -285,6 +285,16 @@ def adjust_line_widths(lines, break_lines_at, line_break_mode):
                 textwrap.fill(l, width=break_lines_at).splitlines()
             )
 
+        elif line_break_mode == 'wrap-no-breaks':
+            broken_lines.extend(
+                textwrap.fill(
+                    l,
+                    width=break_lines_at,
+                    break_long_words=False,
+                    break_on_hyphens=False,
+                ).splitlines()
+            )
+
         elif line_break_mode == 'fill':
             prefix = l[:len(l) - len(l.lstrip())]
             broken_lines.extend(
@@ -368,6 +378,18 @@ def run_script(input_file, script_name,
            Insert a hard break with a backslash
          wrap
            Use textwrap.fill() to wrap
+         wrap-no-breaks
+           Use textwrap.fill() without breaking on hyphens
+           or long words
+         fill
+           Use textwrap.fill(), maintaining whitespace prefix
+           on subsequent lines
+         continue
+           Insert a hard break and backslash at the end of
+           long lines, continuing on the next
+         truncate
+           Chop the line at the required width and discard the
+           remainder
 
     adjust_python_for_version=True
       Boolean controlling whether the default `python`
@@ -407,6 +429,7 @@ def run_script(input_file, script_name,
     try:
         print()
         output_text = sh(real_cmd, capture=True, ignore_error=ignore_error)
+        print(output_text)
     except Exception as err:
         print('*' * 50)
         print('ERROR run_script(%s) => %s' % (real_cmd, err))
