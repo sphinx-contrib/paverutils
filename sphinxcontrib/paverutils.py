@@ -191,7 +191,6 @@ def run_sphinx(options, *option_sets):
         for (name, value) in getattr(options, 'config_args', {}).items()
     ]
     sphinxopts = [
-        '',
         '-b', options.get('builder', 'html'),
         '-d', paths.doctrees,
         '-c', paths.confdir,
