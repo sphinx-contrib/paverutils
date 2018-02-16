@@ -22,7 +22,7 @@ from paver.easy import *  # noqa
 import sphinx
 
 import textwrap
-
+from pkg_resources import parse_version
 
 @task
 def html(options):
@@ -190,11 +190,15 @@ def run_sphinx(options, *option_sets):
         '-D%s=%s' % (name, value)
         for (name, value) in getattr(options, 'config_args', {}).items()
     ]
-    sphinxopts = [
+    if parse_version(sphinx.__version__) < parse_version('1.7.0'):
+        sphinxopts = [""]
+    else:
+        sphinxopts = []
+    sphinxopts.extend([
         '-b', options.get('builder', 'html'),
         '-d', paths.doctrees,
         '-c', paths.confdir,
-    ]
+    ])
 
     if options.get('force_all', False):
         sphinxopts.append('-a')
