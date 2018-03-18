@@ -538,7 +538,7 @@ def _runcog(options, files, uncog=False):
             files = basedir.walkfiles(pattern)
         else:
             files = basedir.walkfiles()
-    for f in files:
+    for f in sorted(files):
         dry("cog %s" % f, c.processOneFile, f)
 
 
