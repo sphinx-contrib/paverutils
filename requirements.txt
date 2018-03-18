@@ -1,2 +1,2 @@
-Sphinx>=0.6
+Sphinx>=1.7.1
 Paver>=1.02.0

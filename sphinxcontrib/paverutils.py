@@ -19,8 +19,6 @@ from cogapp import Cog
 from paver.doctools import Includer, _cogsh
 from paver.easy import *  # noqa
 
-import sphinx
-
 import textwrap
 from pkg_resources import parse_version
 
@@ -118,13 +116,6 @@ def pdf(options):
     return
 
 
-def _wrap_sphinx(sphinxopts):
-    try:
-        return sphinx.main(sphinxopts)
-    except SystemExit as e:
-        return e.code
-
-
 def run_sphinx(options, *option_sets):
     """Helper function to run sphinx with common options.
 
@@ -190,10 +181,7 @@ def run_sphinx(options, *option_sets):
         '-D%s=%s' % (name, value)
         for (name, value) in getattr(options, 'config_args', {}).items()
     ]
-    if parse_version(sphinx.__version__) < parse_version('1.7.0'):
-        sphinxopts = [""]
-    else:
-        sphinxopts = []
+    sphinxopts = []
     sphinxopts.extend([
         '-b', options.get('builder', 'html'),
         '-d', paths.doctrees,
@@ -212,8 +200,7 @@ def run_sphinx(options, *option_sets):
     sphinxopts.extend(template_args)
     sphinxopts.extend(config_args)
     sphinxopts.extend([paths.srcdir, paths.outdir])
-    rc = dry("sphinx-build %s" % (" ".join(sphinxopts),),
-             _wrap_sphinx, sphinxopts)
+    rc = sh("sphinx-build {}".format(" ".join(sphinxopts)))
 
     options.order()
     return rc
