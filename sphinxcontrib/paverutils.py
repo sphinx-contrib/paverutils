@@ -9,8 +9,6 @@ You can also develop your own tasks by calling ``run_sphinx()``
 directly.
 """
 
-from __future__ import print_function
-
 import os
 import sys
 
@@ -20,7 +18,6 @@ from paver.doctools import Includer, _cogsh
 from paver.easy import *  # noqa
 
 import textwrap
-from pkg_resources import parse_version
 
 @task
 def html(options):
