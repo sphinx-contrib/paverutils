@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sphinxcontrib-paverutils"
+dynamic = ["version"]
+description = "Sphinx/Paver integration"
+readme = "README.rst"
+license = "BSD-2-Clause"
+authors = [{ name = "Doug Hellmann", email = "doug@doughellmann.com" }]
+keywords = ["sphinx", "documentation"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Documentation",
+    "Topic :: Utilities",
+]
+dependencies = ["Sphinx>=1.7.1", "Paver>=1.02.0"]
+
+[project.urls]
+Homepage = "https://bitbucket.org/dhellmann/sphinxcontrib-paverutils/"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sphinxcontrib"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/sphinxcontrib",
+    "/README.rst",
+    "/LICENSE",
+    "/CHANGES.*",
+    "/tox.ini",
+]
