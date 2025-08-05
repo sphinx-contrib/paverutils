@@ -29,6 +29,9 @@ dependencies = ["Sphinx>=1.7.1", "Paver>=1.02.0"]
 [project.urls]
 Homepage = "https://bitbucket.org/dhellmann/sphinxcontrib-paverutils/"
 
+[project.optional-dependencies]
+test = ["ruff"]
+
 [tool.hatch.version]
 source = "vcs"
 
