@@ -11,13 +11,13 @@ directly.
 
 import os
 import sys
+import textwrap
 
 from cogapp import Cog
-
 from paver.doctools import Includer, _cogsh
-from paver.easy import *  # noqa
+from paver.easy import consume_args, path, task, Bunch, BuildFailure
+from paver.tasks import dry, sh
 
-import textwrap
 
 @task
 def html(options):
@@ -58,7 +58,7 @@ def html(options):
       dictionary of values to be passed as name-value pairs to configuration
       default: {}
     """
-    run_sphinx(options, 'html')
+    run_sphinx(options, "html")
     return
 
 
@@ -101,14 +101,14 @@ def pdf(options):
       the name of the command to use to make a PDF
       default: pdflatex
     """
-    rc = run_sphinx(options, 'pdf')
+    rc = run_sphinx(options, "pdf")
     if rc:
-        print('skipping the rest of the build, sphinx returned', rc)
+        print("skipping the rest of the build, sphinx returned", rc)
         return rc
-    options.order('pdf')
-    pdflatex = options.get('pdflatex', 'pdflatex')
+    options.order("pdf")
+    pdflatex = options.get("pdflatex", "pdflatex")
     paths = _get_paths(options)
-    outdir = options.get('outdir', paths.builddir / options.builder)
+    outdir = options.get("outdir", paths.builddir / options.builder)
     sh('cd %s; PDFLATEX="%s" make -e' % (outdir, pdflatex))
     return
 
@@ -162,8 +162,8 @@ def run_sphinx(options, *option_sets):
       Flag indicating that Sphinx warnings should be treated as errors.
       Defaults to False.
     """
-    if 'sphinx' not in option_sets:
-        option_sets += ('sphinx',)
+    if "sphinx" not in option_sets:
+        option_sets += ("sphinx",)
     kwds = dict(add_rest=False)
 
     # Set the search order of the options
@@ -171,28 +171,33 @@ def run_sphinx(options, *option_sets):
 
     paths = _get_and_create_paths(options)
     template_args = [
-        '-A%s=%s' % (name, value)
-        for (name, value) in getattr(options, 'template_args', {}).items()
+        "-A%s=%s" % (name, value)
+        for (name, value) in getattr(options, "template_args", {}).items()
     ]
     config_args = [
-        '-D%s=%s' % (name, value)
-        for (name, value) in getattr(options, 'config_args', {}).items()
+        "-D%s=%s" % (name, value)
+        for (name, value) in getattr(options, "config_args", {}).items()
     ]
     sphinxopts = []
-    sphinxopts.extend([
-        '-b', options.get('builder', 'html'),
-        '-d', paths.doctrees,
-        '-c', paths.confdir,
-    ])
+    sphinxopts.extend(
+        [
+            "-b",
+            options.get("builder", "html"),
+            "-d",
+            paths.doctrees,
+            "-c",
+            paths.confdir,
+        ]
+    )
 
-    if options.get('force_all', False):
-        sphinxopts.append('-a')
-    if options.get('freshenv', False):
-        sphinxopts.append('-E')
-    if options.get('warnerror', False):
-        sphinxopts.append('-W')
-    if options.get('quiet', False):
-        sphinxopts.append('-Q')
+    if options.get("force_all", False):
+        sphinxopts.append("-a")
+    if options.get("freshenv", False):
+        sphinxopts.append("-E")
+    if options.get("warnerror", False):
+        sphinxopts.append("-W")
+    if options.get("quiet", False):
+        sphinxopts.append("-Q")
 
     sphinxopts.extend(template_args)
     sphinxopts.extend(config_args)
@@ -222,30 +227,28 @@ def _get_paths(options):
     """
     opts = options
 
-    docroot = path(opts.get('docroot', 'docs'))
+    docroot = path(opts.get("docroot", "docs"))
     if not docroot.exists():
-        raise BuildFailure("Sphinx documentation root (%s) does not exist."
-                           % docroot)
+        raise BuildFailure("Sphinx documentation root (%s) does not exist." % docroot)
 
     builddir = docroot / opts.get("builddir", ".build")
 
     srcdir = docroot / opts.get("sourcedir", "")
     if not srcdir.exists():
-        raise BuildFailure("Sphinx source file dir (%s) does not exist"
-                           % srcdir)
+        raise BuildFailure("Sphinx source file dir (%s) does not exist" % srcdir)
 
     # Where is the sphinx conf.py file?
-    confdir = path(opts.get('confdir', srcdir))
+    confdir = path(opts.get("confdir", srcdir))
 
     # Where should output files be generated?
-    outdir = opts.get('outdir', '')
+    outdir = opts.get("outdir", "")
     if outdir:
         outdir = path(outdir)
     else:
-        outdir = builddir / opts.get('builder', 'html')
+        outdir = builddir / opts.get("builder", "html")
 
     # Where are doctrees cached?
-    doctrees = opts.get('doctrees', '')
+    doctrees = opts.get("doctrees", "")
     if not doctrees:
         doctrees = builddir / "doctrees"
     else:
@@ -256,66 +259,66 @@ def _get_paths(options):
 
 def adjust_line_widths(lines, break_lines_at, line_break_mode):
     broken_lines = []
-    for l in lines:
+    for line in lines:
         # apparently blank line
-        if not l.strip() or len(l) <= break_lines_at:
-            broken_lines.append(l)
+        if not line.strip() or len(line) <= break_lines_at:
+            broken_lines.append(line)
             continue
 
-        if line_break_mode == 'break':
-            while l:
-                part, l = l[:break_lines_at], l[break_lines_at:]
+        if line_break_mode == "break":
+            while line:
+                part, line = line[:break_lines_at], line[break_lines_at:]
                 broken_lines.append(part)
 
-        elif line_break_mode == 'wrap':
-            broken_lines.extend(
-                textwrap.fill(l, width=break_lines_at).splitlines()
-            )
+        elif line_break_mode == "wrap":
+            broken_lines.extend(textwrap.fill(line, width=break_lines_at).splitlines())
 
-        elif line_break_mode == 'wrap-no-breaks':
+        elif line_break_mode == "wrap-no-breaks":
             broken_lines.extend(
                 textwrap.fill(
-                    l,
+                    line,
                     width=break_lines_at,
                     break_long_words=False,
                     break_on_hyphens=False,
                 ).splitlines()
             )
 
-        elif line_break_mode == 'fill':
-            prefix = l[:len(l) - len(l.lstrip())]
+        elif line_break_mode == "fill":
+            prefix = line[: len(line) - len(line.lstrip())]
             broken_lines.extend(
-                textwrap.fill(l, width=break_lines_at,
-                              subsequent_indent=prefix).splitlines()
+                textwrap.fill(
+                    line, width=break_lines_at, subsequent_indent=prefix
+                ).splitlines()
             )
 
-        elif line_break_mode == 'continue':
-            while l:
-                part, l = l[:break_lines_at], l[break_lines_at:]
-                if l:
-                    part = part + '\\'
+        elif line_break_mode == "continue":
+            while line:
+                part, line = line[:break_lines_at], line[break_lines_at:]
+                if line:
+                    part = part + "\\"
                 broken_lines.append(part)
 
-        elif line_break_mode == 'truncate':
-            broken_lines.append(l[:break_lines_at])
+        elif line_break_mode == "truncate":
+            broken_lines.append(line[:break_lines_at])
 
         else:
-            raise ValueError('Unrecognized line_break_mode "%s"'
-                             % line_break_mode)
+            raise ValueError('Unrecognized line_break_mode "%s"' % line_break_mode)
 
     return broken_lines
 
 
-def run_script(input_file, script_name,
-               interpreter='python',
-               include_prefix=True,
-               ignore_error=False,
-               trailing_newlines=True,
-               break_lines_at=0,
-               line_break_mode='break',
-               adjust_python_for_version=True,
-               line_cleanups=[],
-               ):
+def run_script(
+    input_file,
+    script_name,
+    interpreter="python",
+    include_prefix=True,
+    ignore_error=False,
+    trailing_newlines=True,
+    break_lines_at=0,
+    line_break_mode="break",
+    adjust_python_for_version=True,
+    line_cleanups=[],
+):
     """Run a script in the context of the input_file's directory,
     return the text output formatted to be included as an rst
     literal text block.
@@ -392,44 +395,46 @@ def run_script(input_file, script_name,
 
     """
     rundir = path(input_file).dirname()
-    if (adjust_python_for_version
-            and interpreter == 'python'
-            and sys.version_info[0] == 3):
+    if (
+        adjust_python_for_version
+        and interpreter == "python"
+        and sys.version_info[0] == 3
+    ):
         # Automatically switch to python3 if we're running under
         # python3 ourselves.
-        interpreter = 'python3'
+        interpreter = "python3"
     cmd_list = script_name
     if isinstance(script_name, list):
         # We've been given a list, convert it to a string.
-        script_name = ' '.join(cmd_list)
+        script_name = " ".join(cmd_list)
     if interpreter:
-        cmd = '%(interpreter)s %(script_name)s' % {
-            'interpreter': interpreter,
-            'script_name': script_name,
+        cmd = "%(interpreter)s %(script_name)s" % {
+            "interpreter": interpreter,
+            "script_name": script_name,
         }
     else:
         cmd = script_name
-    real_cmd = 'cd %(rundir)s; %(cmd)s 2>&1' % {
-        'rundir': rundir,
-        'cmd': cmd,
+    real_cmd = "cd %(rundir)s; %(cmd)s 2>&1" % {
+        "rundir": rundir,
+        "cmd": cmd,
     }
     try:
         print()
         output_text = sh(real_cmd, capture=True, ignore_error=ignore_error)
         print(output_text)
     except Exception as err:
-        print('*' * 50)
-        print('ERROR run_script(%s) => %s' % (real_cmd, err))
-        print('*' * 50)
+        print("*" * 50)
+        print("ERROR run_script(%s) => %s" % (real_cmd, err))
+        print("*" * 50)
         output_text = sh(real_cmd, capture=True, ignore_error=True)
         print(output_text)
-        print('*' * 50)
+        print("*" * 50)
         if not ignore_error:
             raise
     if include_prefix:
-        response = '\n.. code-block:: none\n\n'
+        response = "\n.. code-block:: none\n\n"
     else:
-        response = ''
+        response = ""
 
     # Start building our result list.
     lines = []
@@ -440,26 +445,23 @@ def run_script(input_file, script_name,
         # parts as already split up. Add the continuation
         # markers to the end.
         if interpreter:
-            lines.append('\t$ {} {}'.format(interpreter, cmd_list[0] + ' \\'))
+            lines.append("\t$ {} {}".format(interpreter, cmd_list[0] + " \\"))
         else:
-            lines.append('\t$ {}'.format(cmd_list[0] + ' \\'))
-        lines.extend(
-            l + ' \\'
-            for l in cmd_list[1:-1]
-        )
+            lines.append("\t$ {}".format(cmd_list[0] + " \\"))
+        lines.extend(line + " \\" for line in cmd_list[1:-1])
         lines.append(cmd_list[-1])
     else:
-        raw_command_line = '\t$ %s' % cmd
+        raw_command_line = "\t$ %s" % cmd
         for cleanup in line_cleanups:
             raw_command_line = cleanup(input_file, raw_command_line)
         command_line = adjust_line_widths(
             [raw_command_line],
             break_lines_at - 1 if break_lines_at else 64,
-            'continue',
+            "continue",
         )
         lines.extend(command_line)
 
-    lines.append('')  # a blank line
+    lines.append("")  # a blank line
     lines.extend(output_text.splitlines())  # the output
 
     # Clean up the raw output lines.
@@ -474,46 +476,47 @@ def run_script(input_file, script_name,
     if break_lines_at:
         lines = adjust_line_widths(lines, break_lines_at, line_break_mode)
 
-    response += '\n\t'.join(lines)
+    response += "\n\t".join(lines)
     if trailing_newlines:
-        while not response.endswith('\n\n'):
-            response += '\n'
+        while not response.endswith("\n\n"):
+            response += "\n"
     else:
         response = response.rstrip()
-        response += '\n'
+        response += "\n"
     return response
+
 
 # Stuff commonly used symbols into the builtins so we don't have to
 # import them in all of the cog blocks where we want to use them.
-__builtins__['run_script'] = run_script
-#__builtins__['sh'] = sh
+__builtins__["run_script"] = run_script
+# __builtins__['sh'] = sh
 
 
 # Modified from paver.doctools._runcog
 def _runcog(options, files, uncog=False):
     """Common function for the cog and runcog tasks."""
-    options.order('cog', 'sphinx', add_rest=True)
+    options.order("cog", "sphinx", add_rest=True)
     c = Cog()
     if uncog:
         c.options.bNoGenerate = True
     c.options.bReplace = True
     c.options.bDeleteCode = options.get("delete_code", False)
-    includedir = options.get('includedir', None)
+    includedir = options.get("includedir", None)
     if includedir:
-        include = Includer(includedir, cog=c,
-                           include_markers=options.get("include_markers"))
+        include = Includer(
+            includedir, cog=c, include_markers=options.get("include_markers")
+        )
         # load cog's namespace with our convenience functions.
-        c.options.defines['include'] = include
-        c.options.defines['sh'] = _cogsh(c)
+        c.options.defines["include"] = include
+        c.options.defines["sh"] = _cogsh(c)
 
-    c.options.sBeginSpec = options.get('beginspec', '[[[cog')
-    c.options.sEndSpec = options.get('endspec', ']]]')
-    c.options.sEndOutput = options.get('endoutput', '[[[end]]]')
+    c.options.sBeginSpec = options.get("beginspec", "[[[cog")
+    c.options.sEndSpec = options.get("endspec", "]]]")
+    c.options.sEndOutput = options.get("endoutput", "[[[end]]]")
 
-    basedir = options.get('basedir', None)
+    basedir = options.get("basedir", None)
     if basedir is None:
-        basedir = (path(options.get('docroot', "docs"))
-                   / options.get('sourcedir', ""))
+        basedir = path(options.get("docroot", "docs")) / options.get("sourcedir", "")
     basedir = path(basedir)
 
     if not files:
@@ -540,19 +543,17 @@ def cog(options):
     See help on paver.doctools.cog for details on the standard
     options.
     """
-    options.order('cog', 'sphinx', add_rest=True)
+    options.order("cog", "sphinx", add_rest=True)
     # Figure out if we were given a filename or
     # directory, and scan the directory for files
     # if we need to.
-    files_to_cog = getattr(options, 'args', [])
+    files_to_cog = getattr(options, "args", [])
     if files_to_cog and os.path.isdir(files_to_cog[0]):
         dir_to_scan = path(files_to_cog[0])
-        files_to_cog = list(dir_to_scan.walkfiles(
-            options.get("pattern", "*.rst")
-        ))
+        files_to_cog = list(dir_to_scan.walkfiles(options.get("pattern", "*.rst")))
     try:
         _runcog(options, files_to_cog)
     except Exception as err:
-        print('ERROR: %s' % err)
+        print("ERROR: %s" % err)
         raise
     return
