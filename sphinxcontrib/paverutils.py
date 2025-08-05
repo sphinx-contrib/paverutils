@@ -15,8 +15,8 @@ import textwrap
 
 from cogapp import Cog
 from paver.doctools import Includer, _cogsh
-from paver.easy import consume_args, path, task, Bunch, BuildFailure
-from paver.tasks import dry, sh
+from paver.easy import consume_args, path, task, Bunch, BuildFailure, sh, dry
+
 
 
 @task
