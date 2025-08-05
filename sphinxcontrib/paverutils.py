@@ -18,7 +18,6 @@ from paver.doctools import Includer, _cogsh
 from paver.easy import consume_args, path, task, Bunch, BuildFailure, sh, dry
 
 
-
 @task
 def html(options):
     """Build HTML documentation using Sphinx.
